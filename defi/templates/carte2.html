@@ -9,6 +9,20 @@
         #map {
             height: 600px;
         }
+        .custom-div-icon {
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            background-color: #007bff;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 40px;
+        }
     </style>
 </head>
 <body>
@@ -86,8 +100,22 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Données des villes récupérées depuis Django
-        var villes_json = JSON.parse('{{ villes_json|safe }}');
+        // Données des villes
+        var villes_json = [
+            {"Ville":"Aïoun","Latitude":16.8366893287323,"Longitude":-9.27583480330441},
+            {"Ville":"Akjoujt","Latitude":19.9420143167071,"Longitude":-14.6440193516613},
+            {"Ville":"Aleg","Latitude":17.1728009990846,"Longitude":-13.9023810848904},
+            {"Ville":"Atar","Latitude":20.6190971368345,"Longitude":-13.4188043441809},
+            {"Ville":"Kaédi","Latitude":16.0455219912174,"Longitude":-13.1873050779235},
+            {"Ville":"Kiffa","Latitude":16.678771880566,"Longitude":-11.4111923888962},
+            {"Ville":"Néma","Latitude":16.3926143684381,"Longitude":-7.34328812930029},
+            {"Ville":"Nouadhibou","Latitude":21.0200766331283,"Longitude":-15.9151199295992},
+            {"Ville":"Nouakchott","Latitude":18.0783994226296,"Longitude":-15.885155269477},
+            {"Ville":"Rosso","Latitude":16.6264755333439,"Longitude":-15.6941505288147},
+            {"Ville":"Sélibaby","Latitude":15.4729996284158,"Longitude":-12.1965786387684},
+            {"Ville":"Tidjikja","Latitude":18.6315729894793,"Longitude":-11.5524434053275},
+            {"Ville":"Zoueratt","Latitude":23.4958870003132,"Longitude":-10.1376367144798}
+        ];
 
         // Construire le graphe
         const graphe = construireGraphe(villes_json);
@@ -95,12 +123,13 @@
         // Trouver le chemin optimal
         const depart = villes_json[8].Ville; // Supposons que le départ est la première ville
         const cheminOptimal = trouverCheminOptimal(graphe, depart);
+        console.log("Chemin optimal:", cheminOptimal);
 
-        // Ajouter des marqueurs pour chaque ville
+        // Ajouter des marqueurs pour chaque ville avec leur nom affiché sur le marqueur
         for (let i = 0; i < villes_json.length; i++) {
             const ville = villes_json[i];
             L.marker([ville.Latitude, ville.Longitude]).addTo(map)
-                .bindPopup("<b>" + ville.Ville + "</b>");
+                .bindTooltip(ville.Ville, { permanent: true, direction: 'top' });
         }
 
         // Dessiner le chemin optimal sur la carte
@@ -112,7 +141,7 @@
         }
 
         // Séparer le chemin en deux segments : départ -> première ville et dernière ville -> départ
-        const indexPremiereVille = 0; // L'indice de la première ville est toujours 0
+        const indexPremiereVille = 8; // L'indice de la première ville est toujours 0
         const segment1 = coordsOptimal.slice(0, indexPremiereVille + 1);
         const segment2 = coordsOptimal.slice(indexPremiereVille);
 
@@ -120,12 +149,32 @@
         L.polyline(segment1, { color: 'blue' }).addTo(map); // Couleur pour le départ -> première ville
         L.polyline(segment2, { color: 'green' }).addTo(map); // Couleur pour la dernière ville -> départ
 
-        // Marquer le point de départ
-        const departCoords = villes_json.find(item => item.Ville === depart);
-        L.marker([departCoords.Latitude, departCoords.Longitude]).addTo(map)
-            .bindPopup("<b>Départ: " + depart + "</b>");
+        // Créer un marqueur initial pour représenter le voyageur
+        const voyageurMarker = L.marker([coordsOptimal[0][0], coordsOptimal[0][1]], {
+            icon: L.divIcon({ className: 'custom-div-icon', html: '<div class="marker"></div>' })
+        }).addTo(map);
 
+        // Index du point actuel sur le chemin
+        let indexPointActuel = 13;
+
+        // Définir l'intervalle de temps pour l'animation (en millisecondes)
+        const animationInterval = 1000; // Par exemple, une seconde entre chaque point
+
+        // Fonction pour déplacer le marqueur vers le prochain point du chemin
+        function animerParcours() {
+            // Vérifier si nous avons atteint la fin du chemin
+            if (indexPointActuel < coordsOptimal.length) {
+                // Déplacer le marqueur vers le prochain point
+                voyageurMarker.setLatLng([coordsOptimal[indexPointActuel][0], coordsOptimal[indexPointActuel][1]]);
+                indexPointActuel++; // Passer au prochain point
+            } else {
+                // Arrêter l'animation une fois que tous les points ont été parcourus
+                clearInterval(animation);
+            }
+        }
+
+        // Lancer l'animation à intervalles réguliers
+        const animation = setInterval(animerParcours, animationInterval);
     </script>
 </body>
 </html>
-
