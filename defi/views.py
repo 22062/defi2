@@ -57,6 +57,7 @@ def import_excel(request):
 
 import os
 
+# Dans votre vue approximation_algorithm
 def approximation_algorithm(request):
     villes = Ville.objects.all()
     coords_list = [(ville.nom, (ville.latitude, ville.longitude)) for ville in villes]
@@ -85,6 +86,7 @@ def approximation_algorithm(request):
     # Obtenir l'URL absolue du graphique
     image_url = request.build_absolute_uri(image_path)
 
+    # Passer l'URL de l'image au template
     return render(request, 'result.html', {'villes': villes_optimales, 'distance_totale': distance_totale, 'image_url': image_url})
 
 
