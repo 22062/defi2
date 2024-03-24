@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte de la Mauritanie avec les Villes</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carte de la Mauritanie avec les Villes</h1>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Fonction pour calculer la distance entre deux points en utilisant les coordonnées GPS
+        function calculerDistance(coords1, coords2) {
+            const [lat1, lon1] = coords1;
+            const [lat2, lon2] = coords2;
+            const R = 6371e3; // rayon de la terre en mètres
+            const φ1 = lat1 * Math.PI / 180; // φ, λ en radians
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            const distance = R * c; // en mètres
+            return distance / 1000; // Convertir en kilomètres
+        }
+
+        // Fonction pour construire le graphe à partir des coordonnées GPS
+        function construireGraphe(coordsList) {
+            const graph = new Map();
+            for (const ville1 of coordsList) {
+                const { Ville: nom1, Latitude: lat1, Longitude: lon1 } = ville1;
+                graph.set(nom1, new Map());
+                for (const ville2 of coordsList) {
+                    if (ville1 !== ville2) {
+                        const { Ville: nom2, Latitude: lat2, Longitude: lon2 } = ville2;
+                        const distance = calculerDistance([lat1, lon1], [lat2, lon2]);
+                        graph.get(nom1).set(nom2, distance);
+                    }
+                }
+            }
+            return graph;
+        }
+
+        // Fonction pour trouver le chemin optimal à partir de l'arbre couvrant minimal
+        function trouverCheminOptimal(graph, depart) {
+            const cheminOptimal = [depart];
+            let villeCourante = depart;
+            const villesRestantes = new Set(graph.keys());
+            villesRestantes.delete(depart);
+
+            while (villesRestantes.size > 0) {
+                let prochaineVille;
+                let distanceMin = Infinity;
+                for (const [ville, distance] of graph.get(villeCourante)) {
+                    if (villesRestantes.has(ville) && distance < distanceMin) {
+                        prochaineVille = ville;
+                        distanceMin = distance;
+                    }
+                }
+                cheminOptimal.push(prochaineVille);
+                villesRestantes.delete(prochaineVille);
+                villeCourante = prochaineVille;
+            }
+
+            cheminOptimal.push(depart); // Retour à la ville de départ
+            return cheminOptimal;
+        }
+
+        // Initialiser la carte
+        var map = L.map('map').setView([20.2543, -9.2398], 6); // Coordonnées du centre de la Mauritanie et zoom initial
+
+        // Ajouter la couche de tuiles OpenStreetMap à la carte
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Données des villes récupérées depuis Django
+        var villes_json = JSON.parse('{{ villes_json|safe }}');
+
+        // Construire le graphe
+        const graphe = construireGraphe(villes_json);
+
+        // Trouver le chemin optimal
+        const depart = villes_json[0].Ville; // Supposons que le départ est la première ville
+        const cheminOptimal = trouverCheminOptimal(graphe, depart);
+        console.log("Chemin optimal:", cheminOptimal);
+
+        // Ajouter des marqueurs pour chaque ville
+        for (let i = 0; i < villes_json.length; i++) {
+            const ville = villes_json[i];
+            L.marker([ville.Latitude, ville.Longitude]).addTo(map)
+                .bindPopup("<b>" + ville.Ville + "</b>");
+        }
+
+        // Dessiner le chemin optimal sur la carte
+        var coordsOptimal = [];
+        for (let i = 0; i < cheminOptimal.length; i++) {
+            const ville = cheminOptimal[i];
+            const coords = villes_json.find(item => item.Ville === ville);
+            coordsOptimal.push([coords.Latitude, coords.Longitude]);
+        }
+
+          // Séparer le chemin en deux segments : départ -> première ville et dernière ville -> départ
+          const indexPremiereVille = 8; // L'indice de la première ville est toujours 0
+        const segment1 = coordsOptimal.slice(0, indexPremiereVille + 1);
+        const segment2 = coordsOptimal.slice(indexPremiereVille);
+
+        // Dessiner les deux segments avec des couleurs différentes
+        L.polyline(segment1, { color: 'blue' }).addTo(map); // Couleur pour le départ -> première ville
+        L.polyline(segment2, { color: 'green' }).addTo(map); // Couleur pour la dernière ville -> départ
+
+        // Marquer le point de départ
+        const departCoords = villes_json.find(item => item.Ville === depart);
+        L.marker([departCoords.Latitude, departCoords.Longitude]).addTo(map)
+            .bindPopup("<b>Départ: " + depart + "</b>");
+
+    </script>
+</body>
+</html>

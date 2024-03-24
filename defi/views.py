@@ -14,6 +14,7 @@ from .models import Ville, Arete
 from django.http import HttpResponse
 import json
 import plotly.graph_objs as go
+import random
 
 def import_excel(request):
     if request.method == 'POST' and request.FILES.get('fichier_excel'):
@@ -146,9 +147,7 @@ def calculer_distance(coords1, coords2):
 
 from django.shortcuts import render
 
-def ant_colony_algorithm(request):
-    # Your view logic goes here
-    return render(request, 'alg2.html')
+
   
 def effacer_villes(request):
     # Supprimer toutes les instances de la table Ville
@@ -157,6 +156,102 @@ def effacer_villes(request):
     # Afficher un message de confirmation
     message = "Les données des villes ont été effacées avec succès."
     return HttpResponse(message)
+  
+def carte_mauritanie(request):
+    villes = Ville.objects.all()
+    villes_json = json.dumps([{'Ville': ville.nom, 'Latitude': ville.latitude, 'Longitude': ville.longitude} for ville in villes])
+    return render(request, 'carte.html', {'villes_json': villes_json})
+  
 
+def init_pheromone(G):
+    # Fonction pour initialiser la quantité de phéromone sur les arêtes
+    pheromone = {}
+    for u, v in G.edges():
+        pheromone[(u, v)] = 1.0
+        pheromone[(v, u)] = 1.0
+    return pheromone
 
+def choisir_ville_suivante(G, pheromone, villes_visitees, alpha, beta):
+    # Fonction pour choisir la prochaine ville à visiter pour une fourmi donnée
+    non_visitees = [v for v in G.nodes() if v not in villes_visitees]
+    probabilites = []
+    for ville in non_visitees:
+        pheromone_edge = pheromone[(villes_visitees[-1], ville)]
+        visibilite_edge = 1 / G[villes_visitees[-1]][ville]['weight']
+        probabilite = (pheromone_edge ** alpha) * (visibilite_edge ** beta)
+        probabilites.append((ville, probabilite))
+    if not probabilites:  # Si aucun voisin valide n'est disponible, revenir à la ville de départ
+        return villes_visitees[0]
+    somme_probabilites = sum(probabilite for _, probabilite in probabilites)
+    probabilites = [(ville, probabilite / somme_probabilites) for ville, probabilite in probabilites]
+    ville_suivante = random.choices([v for v, _ in probabilites], weights=[probabilite for _, probabilite in probabilites])[0]
+    return ville_suivante
 
+def mettre_a_jour_pheromone(pheromone, chemins, Q):
+    # Fonction pour mettre à jour la quantité de phéromone sur les arêtes
+    for chemin in chemins:
+        for i in range(len(chemin) - 1):
+            pheromone[(chemin[i], chemin[i + 1])] += Q / len(chemin)
+            pheromone[(chemin[i + 1], chemin[i])] += Q / len(chemin)
+
+def tsp_aco(G, iterations, alpha, beta, Q):
+    # Fonction pour résoudre le TSP en utilisant l'algorithme de colonie de fourmis (ACO)
+    pheromone = init_pheromone(G)
+    meilleure_solution = None
+    meilleure_distance = float('inf')
+    for _ in range(iterations):
+        chemins = []
+        for _ in range(len(G.nodes())):
+            ville_depart = random.choice(list(G.nodes()))
+            villes_visitees = [ville_depart]
+            distance_totale = 0
+            while len(villes_visitees) < len(G.nodes()):
+                ville_suivante = choisir_ville_suivante(G, pheromone, villes_visitees, alpha, beta)
+                villes_visitees.append(ville_suivante)
+                distance_totale += G[villes_visitees[-2]][ville_suivante]['weight']
+            chemins.append(villes_visitees)
+            if distance_totale < meilleure_distance:
+                meilleure_solution = villes_visitees
+                meilleure_distance = distance_totale
+        mettre_a_jour_pheromone(pheromone, chemins, Q)
+    return meilleure_solution, meilleure_distance
+
+def ant_colony_algorithm(request):
+    # Vue pour l'algorithme de colonie de fourmis
+    villes = Ville.objects.all()
+
+    # Création du graphe pondéré à partir des coordonnées des villes
+    G = nx.Graph()
+    for ville1 in villes:
+        for ville2 in villes:
+            if ville1 != ville2:
+                distance = geopy.distance.geodesic((ville1.latitude, ville1.longitude), (ville2.latitude, ville2.longitude)).km
+                G.add_edge(ville1.nom, ville2.nom, weight=distance)
+
+    # Paramètres de l'algorithme ACO
+    iterations = 100
+    alpha = 1
+    beta = 2
+    Q = 1
+
+    # Résoudre le TSP en utilisant l'algorithme ACO
+    meilleure_solution, meilleure_distance = tsp_aco(G, iterations, alpha, beta, Q)
+
+    # Dessiner le graphe des résultats
+    plt.figure(figsize=(10, 6))
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
+    nx.draw_networkx_nodes(G, pos, nodelist=meilleure_solution, node_color='red', node_size=500)
+    nx.draw_networkx_edges(G, pos, edgelist=[(meilleure_solution[i], meilleure_solution[i + 1]) for i in range(len(meilleure_solution) - 1)], edge_color='red', width=2)
+    nx.draw_networkx_edges(G, pos, edgelist=[(meilleure_solution[-1], meilleure_solution[0])], edge_color='red', width=2)
+    plt.title('Résultat de l\'algorithme de colonie de fourmis')
+    plt.axis('off')
+    plt.savefig('resultat_aco.png')  # Sauvegarde du graphe sous forme d'image
+    plt.close()  # Fermer le graphe pour éviter les superpositions lors du rendu de la page
+
+    # Passer les résultats à la template
+    context = {
+        'meilleure_solution': meilleure_solution,
+        'meilleure_distance': meilleure_distance,
+    }
+    return render(request, 'ACO.html', context)
