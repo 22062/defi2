@@ -1,4 +1,3 @@
-<!-- result.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,25 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résultat</title>
     {% load static %}
+    <!-- Ajouter le lien vers Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <style>
+        /* Ajouter une bordure autour des éléments */
+        .border-custom {
+            border: 1px solid #43e659;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+    </style> -->
 </head>
 <body>
-    <h1>Itinéraire Optimal en Mauritanie</h1>
-    <h2>Villes optimales:</h2>
-    <ul>
-        {% for ville in villes %}
-            <li>{{ ville.nom }}</li>
-        {% endfor %}
-    </ul>
-    <p>Distance totale: {{ distance_totale }} km</p>
+    <div class="container">
+        <!-- Formulaire pour afficher sur la carte -->
+        <div class="text-right w-100">
+            <form id="afficherCarteForm" method="post" action="{% url 'carte_mauritanie' %}" class="mt-5">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Afficher sur la carte</button>
+            </form>
+        </div>
+      
+        <!-- Contenu principal -->
+        <div class="card text-white border-0 mt-5 w-100 border-custom">
+          <div class="card-body bg-light">
+              <h4 class="card-title bg-success text-center">Itinéraire Optimal en Mauritanie <br> Villes optimales </h4>
+              <!-- <h2 class="card-subtitle mb-4 bg-success"></h2> -->
+              <ul>
+                  {% for ville in villes %}
+                      <li>{{ ville.nom }}</li>
+                  {% endfor %}
+              </ul>
+              
+              <!-- Image du graphe -->
+              <div class="mt-4 text-center">
+                  <img id="graphImg" src="{% static '/img/graph.png' %}" class="img-fluid" alt="Graphe Itinéraire Optimal">
+              </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Ajouter le lien vers Bootstrap JS (facultatif, pour certaines fonctionnalités avancées de Bootstrap) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
-    <!-- Ajouter l'image ici -->
-    <img src="{% static '/img/graph.png' %}" alt="Graphe Itinéraire Optimal">
-
-
-    <!-- Ajouter le formulaire pour le bouton -->
-    <form method="post" action="{% url 'carte_mauritanie' %}">
-        {% csrf_token %}
-        <button type="submit">Afficher sur la carte</button>
-    </form>
+    <!-- Script JavaScript pour ajouter une bordure à l'image -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ajouter une bordure à l'image
+            var img = document.getElementById('graphImg');
+            img.classList.add('border-custom');
+        });
+    </script>
 </body>
 </html>
