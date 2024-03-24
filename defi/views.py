@@ -75,18 +75,19 @@ def approximation_algorithm(request):
 
     # Affichage du graphe avec les noms des villes
     pos = nx.spring_layout(G)
-    nx.draw(optimal_subgraph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=8, font_weight='bold')
+    nx.draw(optimal_subgraph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=8, font_weight='bold',
+            edge_color='green')  # Changer la couleur de la ligne en vert
 
     # Annoter le point de départ (Nouakchott) et le point d'arrivée
     plt.annotate('Départ (Nouakchott)', xy=pos[depart], xytext=(pos[depart][0]-0.1, pos[depart][1]+0.05),
                  arrowprops=dict(facecolor='black', arrowstyle='->'))
     plt.annotate('Arrivée', xy=pos[chemin_optimal[-1]], xytext=(pos[chemin_optimal[-1]][0]+0.05, pos[chemin_optimal[-1]][1]-0.1),
-                 arrowprops=dict(facecolor='black', arrowstyle='->'))
+                 arrowprops=dict(facecolor='blue', arrowstyle='->'))
 
     # Ajouter une flèche pour afficher le prochain ville
     prochain_ville_index = (chemin_optimal[1] if len(chemin_optimal) > 1 else chemin_optimal[0])
     plt.annotate('Ville suivante', xy=pos[prochain_ville_index], xytext=(pos[prochain_ville_index][0]+0.05, pos[prochain_ville_index][1]+0.05),
-                 arrowprops=dict(facecolor='black', arrowstyle='->'))
+                 arrowprops=dict(facecolor='blue', arrowstyle='->'))
 
     plt.title('Solution Optimale en Mauritanie')
     plt.axis('off')  # Masquer les axes

@@ -1,59 +1,44 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Importation de fichier Excel</title>
+    {% load static %}
+    <!-- Ajouter le lien vers Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #4CAF50;
-            text-align: center;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        input[type="file"] {
-            margin-bottom: 10px;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
+        .custom-container {
+            width: 50%; /* Réduction de la largeur de la page */
+            margin: 0 auto; /* Centrer le contenu */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Ajouter une ombre portée */
+            padding: 20px; /* Ajouter un espacement intérieur */
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Importation de fichier Excel</h1>
+    <div class="container custom-container mt-5">
+        <h1 class="mb-4 bg-success text-white p-3">Importation de fichier Excel</h1>
         <form method="post" enctype="multipart/form-data" action="{% url 'importer_fichier_excel' %}">
             {% csrf_token %}
-            <input type="file" name="fichier_excel" accept=".xlsx, .xls">
-            <input type="submit" value="Importer">
+            <div class="custom-file mb-3">
+                <input type="file" class="custom-file-input" id="customFile" name="fichier_excel" accept=".xlsx, .xls" onchange="updateFileName()">
+                <label class="custom-file-label" for="customFile" id="customFileLabel">Choisir un fichier Excel</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Importer</button>
         </form>
     </div>
+
+    <!-- Ajouter le lien vers Bootstrap JS (facultatif, pour certaines fonctionnalités avancées de Bootstrap) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        function updateFileName() {
+            var input = document.getElementById('customFile');
+            var label = document.getElementById('customFileLabel');
+            var fileName = input.files[0].name;
+            label.innerHTML = fileName;
+        }
+    </script>
 </body>
 </html>
