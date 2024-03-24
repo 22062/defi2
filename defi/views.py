@@ -58,6 +58,7 @@ def import_excel(request):
 
 import os
 
+# Dans votre vue approximation_algorithm
 def approximation_algorithm(request):
     villes = Ville.objects.all()
     coords_list = [(ville.nom, (ville.latitude, ville.longitude)) for ville in villes]
