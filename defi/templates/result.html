@@ -18,6 +18,17 @@
     <p>Distance totale: {{ distance_totale }} km</p>
     
     <!-- Ajouter l'image ici -->
+<<<<<<< HEAD
     <img src="{{ image_url }}" alt="Graphe Itinéraire Optimal" width="100px" height="100px">
+=======
+    <img src="{% static '/img/graph.png' %}" alt="Graphe Itinéraire Optimal">
+
+
+    <!-- Ajouter le formulaire pour le bouton -->
+    <form method="post" action="{% url 'carte_mauritanie' %}">
+        {% csrf_token %}
+        <button type="submit">Afficher sur la carte</button>
+    </form>
+>>>>>>> 60d599716a33a376f8ee743ab4c00e184e8a8acc
 </body>
 </html>
