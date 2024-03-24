@@ -262,7 +262,10 @@ def ant_colony_algorithm(request):
     nx.draw_networkx_edges(G, pos, edgelist=[(meilleure_solution[-1], meilleure_solution[0])], edge_color='red', width=2)
     plt.title('Résultat de l\'algorithme de colonie de fourmis')
     plt.axis('off')
-    plt.savefig('resultat_aco.png')  # Sauvegarde du graphe sous forme d'image
+
+    # Enregistrer le graphe sous forme d'image dans le répertoire static/img
+    image_path = os.path.join('static', 'img', 'resultat_aco.png')
+    plt.savefig(image_path)  # Sauvegarde du graphe sous forme d'image
     plt.close()  # Fermer le graphe pour éviter les superpositions lors du rendu de la page
 
     # Passer les résultats à la template
@@ -271,3 +274,15 @@ def ant_colony_algorithm(request):
         'meilleure_distance': meilleure_distance,
     }
     return render(request, 'ACO.html', context)
+
+  
+def afficher_sur_carte(request):
+    # Code pour générer la page avec les résultats affichés sur une carte
+    # Vous pouvez utiliser des bibliothèques comme Leaflet.js, Google Maps API, etc.
+    # Pour cet exemple, nous allons simplement rendre un template HTML vide
+    return render(request, 'carte2.html')
+
+def carte_mauritanie2(request):
+    villes = Ville.objects.all()
+    villes_json = json.dumps([{'nom': ville.nom, 'latitude': ville.latitude, 'longitude': ville.longitude} for ville in villes])
+    return render(request, 'carte2.html', {'villes_json': villes_json})

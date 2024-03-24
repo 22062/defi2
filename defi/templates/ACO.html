@@ -1,14 +1,52 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Résultats de l'algorithme de colonie de fourmis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat de l'algorithme de colonie de fourmis</title>
+    <!-- Ajouter le lien vers Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Résultats de l'algorithme de colonie de fourmis</h1>
-    <h2>Meilleure solution trouvée :</h2>
-    <p>{{ meilleure_solution }}</p>
-    <h2>Distance de la meilleure solution :</h2>
-    <p>{{ meilleure_distance }}</p>
+  <div class="container mt-5">
+      <!-- Formulaire pour afficher sur la carte -->
+      <div class="text-right w-100">
+          <form id="afficherCarteForm" method="post" action="{% url 'carte_mauritanie' %}" class="mt-5">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success">Afficher sur la carte</button>
+          </form>
+      </div>
+    
+      <!-- Contenu principal -->
+      <div class="card text-white border-0 mt-4  w-100 border-custom" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); max-height: 600px;">
+        <div class="card-body bg-light">
+            <h4 class="card-title bg-success text-center">Résultat de l'algorithme de colonie de fourmis ACO</h4>
+            <div class="row justify-content-center mt-4">
+              <div class="col-md-4">
+                  <p class="text-center text-success">Distance de la meilleure solution : {{ meilleure_distance }} Km</p>
+              </div>
+          </div>
+            <!-- Image du graphe -->
+            <div class="mt-4 text-center">
+              <img id="graphImg" style="max-width: 400px;" src="{% static '/img/resultat_aco.png' %}" class="img-fluid rounded border border-success shadow reduced-width" alt="Graphe des résultats de l'algorithme de colonie de fourmis">
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- Ajouter le lien vers Bootstrap JS (facultatif, pour certaines fonctionnalités avancées de Bootstrap) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+
+  <!-- Script JavaScript pour ajouter une bordure à l'image -->
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Ajouter une bordure à l'image
+          var img = document.getElementById('graphImg');
+          img.classList.add('border-custom');
+      });
+  </script>
 </body>
+
 </html>
