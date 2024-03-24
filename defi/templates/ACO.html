@@ -2,13 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Résultats de l'algorithme de colonie de fourmis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat de l'algorithme de colonie de fourmis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #006400; /* Couleur verte foncée */
+            margin-top: 20px;
+        }
+
+        img {
+            display: block;
+            margin: 0 auto;
+            border: 5px solid #006400; /* Bordure verte */
+            box-shadow: 0px 0px 20px rgba(0, 100, 0, 0.5); /* Ombre verte */
+            border-radius: 10px; /* Coins arrondis */
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #006400; /* Couleur verte foncée */
+            color: #ffffff; /* Texte blanc */
+            text-decoration: none;
+            border-radius: 5px; /* Coins arrondis */
+            box-shadow: 0px 0px 10px rgba(0, 100, 0, 0.5); /* Ombre verte */
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p:nth-child(odd) {
+            color: #006400; /* Couleur verte foncée pour les éléments impairs */
+        }
+
+        p:nth-child(even) {
+            color: #008000; /* Couleur verte claire pour les éléments pairs */
+        }
+    </style>
 </head>
 <body>
-    <h1>Résultats de l'algorithme de colonie de fourmis</h1>
-    <h2>Meilleure solution trouvée :</h2>
-    <p>{{ meilleure_solution }}</p>
-    <h2>Distance de la meilleure solution :</h2>
-    <p>{{ meilleure_distance }}</p>
+    <h1>Résultat de l'algorithme de colonie de fourmis ACO</h1>
+    
+    <!-- Affichage de l'image -->
+    <img src="{{ MEDIA_URL }}images/resultat_aco.png" alt="Graphe des résultats de l'algorithme de colonie de fourmis">
+
+    <!-- Bouton pour afficher sur la carte -->
+    <a href="{% url 'afficher_sur_carte' %}" class="btn btn-primary">Afficher sur la carte</a>
+
+    <!-- Affichage des autres résultats -->
+    <p>Meilleure solution : {{ meilleure_solution }}</p>
+    <p>Distance de la meilleure solution : {{ meilleure_distance }} Km</p>
 </body>
 </html>

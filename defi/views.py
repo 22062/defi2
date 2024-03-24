@@ -255,3 +255,14 @@ def ant_colony_algorithm(request):
         'meilleure_distance': meilleure_distance,
     }
     return render(request, 'ACO.html', context)
+  
+def afficher_sur_carte(request):
+    # Code pour générer la page avec les résultats affichés sur une carte
+    # Vous pouvez utiliser des bibliothèques comme Leaflet.js, Google Maps API, etc.
+    # Pour cet exemple, nous allons simplement rendre un template HTML vide
+    return render(request, 'carte2.html')
+
+def carte_mauritanie2(request):
+    villes = Ville.objects.all()
+    villes_json = json.dumps([{'nom': ville.nom, 'latitude': ville.latitude, 'longitude': ville.longitude} for ville in villes])
+    return render(request, 'carte2.html', {'villes_json': villes_json})

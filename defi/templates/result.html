@@ -1,4 +1,3 @@
-<!-- result.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résultat</title>
     {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #006400; /* Couleur verte foncée */
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #006400; /* Couleur verte foncée */
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        li {
+            color: #008000; /* Couleur verte claire */
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #006400; /* Couleur verte foncée */
+        }
+
+        img {
+            display: block;
+            margin: 0 auto;
+            border: 5px solid #006400; /* Bordure verte */
+            box-shadow: 0px 0px 20px rgba(0, 100, 0, 0.5); /* Ombre verte */
+            border-radius: 10px; /* Coins arrondis */
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #006400; /* Couleur verte foncée */
+            color: #ffffff; /* Texte blanc */
+            border: none;
+            border-radius: 5px; /* Coins arrondis */
+            box-shadow: 0px 0px 10px rgba(0, 100, 0, 0.5); /* Ombre verte */
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #008000; /* Couleur verte claire au survol */
+        }
+    </style>
 </head>
 <body>
     <h1>Itinéraire Optimal en Mauritanie</h1>
-    <h2>Villes optimales:</h2>
+    <h2>Villes optimales en utilisant l'algorithme d'approximation:</h2>
     <ul>
         {% for ville in villes %}
             <li>{{ ville.nom }}</li>
