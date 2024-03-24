@@ -21,5 +21,10 @@
     <img src="{% static '/img/graph.png' %}" alt="Graphe Itinéraire Optimal">
 
 
+    <!-- Ajouter le formulaire pour le bouton -->
+    <form method="post" action="{% url 'carte_mauritanie' %}">
+        {% csrf_token %}
+        <button type="submit">Afficher sur la carte</button>
+    </form>
 </body>
 </html>

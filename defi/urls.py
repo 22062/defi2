@@ -6,6 +6,7 @@ urlpatterns = [
     path('approximation_algorithm/', views.approximation_algorithm, name='approximation_algorithm'),
      path('ant-colony/', views.ant_colony_algorithm, name='ant_colony_algorithm'),
      path('effacer_villes/', views.effacer_villes, name='effacer_villes'),
+      path('carte-mauritanie/', views.carte_mauritanie, name='carte_mauritanie'),
   #  path('choose_algorithm/', views.choose_algorithm, name='choose_algorithm'),  # Ajoutez cette ligne
     #path('resultats/', views.resultats_importation, name='resultats_importation'),
      #path('afficher-graphe/', views.afficher_graphe, name='afficher_graphe'),
