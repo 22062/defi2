@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat de l'importation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Pour centrer les boutons */
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            margin-top: 20px; /* Ajouter un espace entre la table et les boutons */
+        }
+        .algorithm-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-right: 10px; /* Ajouter un espace entre les boutons */
+        }
+        .algorithm-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Le fichier a été importé avec succès. Choisissez l'un des algorithmes :</h1>
+        <table>
+          <thead>
+              <tr>
+                  <th>Nom</th>
+                  <th>Longitude</th>
+                  <th>Latitude</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for ville in villes %}
+                  <tr>
+                      <td>{{ ville.nom }}</td>
+                      <td>{{ ville.longitude }}</td>
+                      <td>{{ ville.latitude }}</td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+        </table>
+        <div class="button-container">
+            <a href="{% url 'approximation_algorithm' %}" class="algorithm-button">Algorithme d’approximation</a>
+            <a href="{% url 'ant_colony_algorithm' %}" class="algorithm-button">Algorithme de colonie de fourmis</a>
+        </div>
+    </div>
+</body>
+</html>

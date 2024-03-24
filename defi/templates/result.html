@@ -1,0 +1,25 @@
+<!-- result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat</title>
+    {% load static %}
+</head>
+<body>
+    <h1>Itinéraire Optimal en Mauritanie</h1>
+    <h2>Villes optimales:</h2>
+    <ul>
+        {% for ville in villes %}
+            <li>{{ ville.nom }}</li>
+        {% endfor %}
+    </ul>
+    <p>Distance totale: {{ distance_totale }} km</p>
+    
+    <!-- Ajouter l'image ici -->
+    <img src="{% static 'graph.png' %}" alt="Graphe Itinéraire Optimal">
+
+
+</body>
+</html>
